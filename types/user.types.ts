@@ -13,3 +13,8 @@ export interface ICreateUserDto {
   name: string;
   email: string;
 }
+
+export interface IPartialUpdateUserDto {
+  name?: string;
+  email?: string;
+}

@@ -20,6 +20,7 @@ interface ApiResponse<T> {
   error?: string;
   message?: string;
 }
+
 // ====================== DATABASE ================================
 const users: IUser[] = [
   { id: 1, name: "Alice", email: "alice@gd.com" },
@@ -152,6 +153,36 @@ app.patch(
       success: true,
       data: user,
       message: "User partially updated",
+    });
+  },
+);
+
+// ===================== DELETE /api/users/:id =========================
+app.delete(
+  "/api/users/:id",
+  (
+    req: Request<{ id: string }>,
+    res: Response<ApiResponse<{ deletedId: number }>>,
+  ) => {
+    const id = Number(req.params.id);
+
+    const index = users.findIndex((u) => u.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    users.splice(index, 1);
+
+    return res.json({
+      success: true,
+      data: {
+        deletedId: id,
+      },
+      message: "User deleted",
     });
   },
 );

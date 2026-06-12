@@ -18,3 +18,8 @@ export interface IPartialUpdateUserDto {
   name?: string;
   email?: string;
 }
+
+export interface IChangeEmailDto {
+  newEmail: string;
+  confirmEmail: string;
+}

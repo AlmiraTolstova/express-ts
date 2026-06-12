@@ -4,6 +4,7 @@ import {
   IUser,
   ICreateUserDto,
   IPartialUpdateUserDto,
+  IChangeEmailDto,
 } from "./types/user.types";
 
 // ======================== TYPES ==============================
@@ -183,6 +184,50 @@ app.delete(
         deletedId: id,
       },
       message: "User deleted",
+    });
+  },
+);
+
+// ===================== POST /api/users/:id/change-email =========================
+app.post(
+  "/api/users/:id/change-email",
+  (
+    req: Request<{ id: string }, {}, IChangeEmailDto>,
+    res: Response<ApiResponse<IUser>>,
+  ) => {
+    const id = Number(req.params.id);
+    const user = users.find((u) => u.id === id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const { newEmail, confirmEmail } = req.body;
+
+    if (newEmail !== confirmEmail) {
+      return res.status(400).json({
+        success: false,
+        error: "Emails do not match",
+      });
+    }
+
+    const emailExists = users.some((u) => u.email === newEmail && u.id !== id);
+
+    if (emailExists) {
+      return res.status(400).json({
+        success: false,
+        error: "Email already exists",
+      });
+    }
+
+    user.email = newEmail;
+    return res.json({
+      success: true,
+      data: user,
+      message: "Email changed successfully",
     });
   },
 );
